@@ -16,7 +16,7 @@ pipeline {
                         ],
                         vaultSecrets: [
                             [
-                                path: 'awscreds/awscreds',
+                                path: 'awscreds',
                                 secretValues: [
                                     [envVar: 'AWS_ACCESS_KEY_ID', vaultKey: 'AWS_ACCESS_KEY_ID'],
                                     [envVar: 'AWS_SECRET_ACCESS_KEY', vaultKey: 'AWS_SECRET_ACCESS_KEY']
