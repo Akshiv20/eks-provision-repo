@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        VAULT_ADDR = 'http://127.0.0.1:8200'  // Change if needed
+        VAULT_ADDR = 'http://127.0.0.1:8200'
     }
 
     stages {
@@ -11,13 +11,12 @@ pipeline {
                 script {
                     withVault(
                         configuration: [
-                            vaultUrl: "${VAULT_ADDR}",
-                            vaultCredentialId: 'vault-token'
+                            vaultUrl: "${env.VAULT_ADDR}",
+                            vaultCredentialId: 'vault-token' // This must match Jenkins -> Credentials ID
                         ],
                         vaultSecrets: [
                             [
                                 path: 'awscreds/awscreds',
-                                engineVersion: 2,
                                 secretValues: [
                                     [envVar: 'AWS_ACCESS_KEY_ID', vaultKey: 'AWS_ACCESS_KEY_ID'],
                                     [envVar: 'AWS_SECRET_ACCESS_KEY', vaultKey: 'AWS_SECRET_ACCESS_KEY']
@@ -25,9 +24,9 @@ pipeline {
                             ]
                         ]
                     ) {
-                        echo "AWS credentials retrieved successfully from Vault."
-                        // Optional: Print the first few chars for debug (never print full keys)
-                        echo "Access Key ID starts with: ${AWS_ACCESS_KEY_ID.take(4)}***"
+                        echo "Vault credentials successfully loaded."
+                        sh 'echo $AWS_ACCESS_KEY_ID'
+                        sh 'echo $AWS_SECRET_ACCESS_KEY'
                     }
                 }
             }
@@ -47,10 +46,8 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                input(message: 'Do you want to apply the changes?')
                 sh 'terraform apply -auto-approve'
             }
         }
     }
 }
-
