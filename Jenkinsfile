@@ -6,13 +6,13 @@ pipeline {
     }
 
     stages {
-        stage('Read AWS Credentials from Vault') {
+        stage('Terraform Pipeline with Vault') {
             steps {
                 script {
                     withVault(
                         configuration: [
                             vaultUrl: "${env.VAULT_ADDR}",
-                            vaultCredentialId: 'vault-token' // This must match Jenkins -> Credentials ID
+                            vaultCredentialId: 'vault-token' // Must match Jenkins Credentials ID
                         ],
                         vaultSecrets: [
                             [
@@ -25,28 +25,17 @@ pipeline {
                         ]
                     ) {
                         echo "Vault credentials successfully loaded."
+
+                        // Optional: Verify environment variables
                         sh 'echo $AWS_ACCESS_KEY_ID'
                         sh 'echo $AWS_SECRET_ACCESS_KEY'
+
+                        // Run Terraform commands within the same environment
+                        sh 'terraform init'
+                        sh 'terraform plan'
+                        sh 'terraform apply -auto-approve'
                     }
                 }
-            }
-        }
-
-        stage('Terraform Init') {
-            steps {
-                sh 'terraform init'
-            }
-        }
-
-        stage('Terraform Plan') {
-            steps {
-                sh 'terraform plan'
-            }
-        }
-
-        stage('Terraform Apply') {
-            steps {
-                sh 'terraform apply -auto-approve'
             }
         }
     }
