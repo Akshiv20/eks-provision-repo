@@ -1,11 +1,10 @@
 pipeline {
     agent any
 
-    // Vault secret path: Adjust as per your setup or remove Vault usage if not fetching creds
-    // VAULT_SECRET_PATH = 'aws/creds/eks-role' 
-
     environment {
         VAULT_ADDR = 'http://127.0.0.1:8200'
+        // Uncomment and update this if you want to fetch AWS creds from Vault
+        // VAULT_SECRET_PATH = 'aws/creds/eks-role' 
         TERRAFORM_DIR = 'terraform'
     }
 
@@ -13,11 +12,8 @@ pipeline {
         stage('🔐 Get AWS Credentials from Vault (Optional)') {
             steps {
                 script {
-                    // If you're NOT using Vault to fetch creds, comment out or remove this block
-                    // If IAM Role attached to Jenkins agent is sufficient, you can skip this stage
-                    // Here is example if you want to use Vault:
-
                     /*
+                    // Uncomment and update this block if fetching creds from Vault
                     def creds = sh(
                         script: "vault read -format=json ${VAULT_SECRET_PATH}",
                         returnStdout: true
@@ -28,6 +24,9 @@ pipeline {
                     env.AWS_SECRET_ACCESS_KEY = json.data.secret_key
                     env.AWS_SESSION_TOKEN     = json.data.security_token
                     */
+
+                    // To avoid Groovy parse errors, at least one statement must be present here:
+                    echo 'Skipping Vault credentials fetching stage (or customize as needed)'
                 }
             }
         }
@@ -43,7 +42,7 @@ pipeline {
         stage('🔎 Checkov Scan') {
             steps {
                 dir("${env.TERRAFORM_DIR}") {
-                    // Run Checkov directly (pip installed)
+                    // Run Checkov installed via pip directly
                     sh 'checkov -d . > checkov_report.txt || true'
                     archiveArtifacts artifacts: 'checkov_report.txt', fingerprint: true
                 }
