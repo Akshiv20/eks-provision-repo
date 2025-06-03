@@ -9,24 +9,33 @@ pipeline {
     }
 
     stages {
-        stage('🔐 Get AWS Credentials from Vault (Optional)') {
+        stage('Checkout Code') {
+            steps {
+                checkout([$class: 'GitSCM',
+                    branches: [[name: '*/master']],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/Akshiv20/eks-provision-repo.git'
+                    ]]
+                ])
+            }
+        }
+
+        stage('🔐 Get AWS Credentials from Vault') {
             steps {
                 script {
-                    /*
-                    // Uncomment and update this block if fetching creds from Vault
+                    // Fetch AWS credentials from Vault and set env variables
                     def creds = sh(
                         script: "vault read -format=json ${VAULT_SECRET_PATH}",
                         returnStdout: true
                     ).trim()
 
                     def json = readJSON text: creds
+
                     env.AWS_ACCESS_KEY_ID     = json.data.access_key
                     env.AWS_SECRET_ACCESS_KEY = json.data.secret_key
                     env.AWS_SESSION_TOKEN     = json.data.security_token
-                    */
 
-                    // To avoid Groovy parse errors, at least one statement must be present here:
-                    echo 'Skipping Vault credentials fetching stage (or customize as needed)'
+                    echo "AWS credentials fetched from Vault successfully."
                 }
             }
         }
@@ -42,7 +51,6 @@ pipeline {
         stage('🔎 Checkov Scan') {
             steps {
                 dir("${env.TERRAFORM_DIR}") {
-                    // Run Checkov installed via pip directly
                     sh 'checkov -d . > checkov_report.txt || true'
                     archiveArtifacts artifacts: 'checkov_report.txt', fingerprint: true
                 }
