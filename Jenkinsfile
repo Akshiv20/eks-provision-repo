@@ -1,10 +1,11 @@
 pipeline {
     agent any
 
+    // Vault secret path: Adjust as per your setup or remove Vault usage if not fetching creds
+    // VAULT_SECRET_PATH = 'aws/creds/eks-role' 
+
     environment {
         VAULT_ADDR = 'http://127.0.0.1:8200'
-        // Adjust the Vault secret path as per your setup or remove Vault usage if not fetching creds
-        // VAULT_SECRET_PATH = 'aws/creds/eks-role' 
         TERRAFORM_DIR = 'terraform'
     }
 
