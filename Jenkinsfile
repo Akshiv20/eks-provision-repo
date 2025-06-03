@@ -20,10 +20,11 @@ pipeline {
             }
         }
 
-        stage('🔐 Get AWS Credentials from Vault') {
+        stage('🔐 Get AWS Credentials from Vault (Optional)') {
             steps {
                 script {
-                    // Fetch AWS credentials from Vault and set env variables
+                    /*
+                    // Uncomment if you want to fetch AWS creds from Vault, else skip this stage
                     def creds = sh(
                         script: "vault read -format=json ${VAULT_SECRET_PATH}",
                         returnStdout: true
@@ -34,8 +35,7 @@ pipeline {
                     env.AWS_ACCESS_KEY_ID     = json.data.access_key
                     env.AWS_SECRET_ACCESS_KEY = json.data.secret_key
                     env.AWS_SESSION_TOKEN     = json.data.security_token
-
-                    echo "AWS credentials fetched from Vault successfully."
+                    */
                 }
             }
         }
