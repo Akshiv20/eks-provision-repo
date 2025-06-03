@@ -24,18 +24,20 @@ pipeline {
             steps {
                 script {
                     /*
-                    // Uncomment if you want to fetch AWS creds from Vault, else skip this stage
+                    // Uncomment and update this block if fetching creds from Vault
                     def creds = sh(
                         script: "vault read -format=json ${VAULT_SECRET_PATH}",
                         returnStdout: true
                     ).trim()
 
                     def json = readJSON text: creds
-
                     env.AWS_ACCESS_KEY_ID     = json.data.access_key
                     env.AWS_SECRET_ACCESS_KEY = json.data.secret_key
                     env.AWS_SESSION_TOKEN     = json.data.security_token
                     */
+
+                    // To avoid Groovy parse errors, at least one statement must be present here:
+                    echo 'Skipping Vault credentials fetching stage (or customize as needed)'
                 }
             }
         }
