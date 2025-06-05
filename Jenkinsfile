@@ -5,7 +5,7 @@ pipeline {
         VAULT_ADDR = 'http://127.0.0.1:8200'
         // Uncomment and update this if you want to fetch AWS creds from Vault
         // VAULT_SECRET_PATH = 'aws/creds/eks-role' 
-        TERRAFORM_DIR = '.'  // point to root folder
+        TERRAFORM_DIR = '.'  // point to root folder or terraform config folder
     }
 
     stages {
@@ -72,6 +72,16 @@ pipeline {
                 dir("${env.TERRAFORM_DIR}") {
                     input message: 'Do you want to apply the Terraform changes?'
                     sh 'terraform apply -auto-approve'
+                }
+            }
+        }
+
+        
+        stage('🗑️ Terraform Destroy') {
+            steps {
+                dir("${env.TERRAFORM_DIR}") {
+                    input message: 'Do you want to destroy the Terraform-managed infrastructure?'
+                    sh 'terraform destroy -auto-approve'
                 }
             }
         }
