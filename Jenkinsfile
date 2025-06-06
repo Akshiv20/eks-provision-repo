@@ -76,7 +76,7 @@ pipeline {
             }
         }
 
-        
+       /* //Make sure to use this only after completing the entire project
         stage('🗑️ Terraform Destroy') {
             steps {
                 dir("${env.TERRAFORM_DIR}") {
@@ -87,3 +87,4 @@ pipeline {
         }
     }
 }
+*/
