@@ -76,7 +76,8 @@ pipeline {
             }
         }
 
-       /* //Make sure to use this only after completing the entire project
+        // Optional destroy stage (disabled by default)
+        /*
         stage('🗑️ Terraform Destroy') {
             steps {
                 dir("${env.TERRAFORM_DIR}") {
@@ -85,6 +86,6 @@ pipeline {
                 }
             }
         }
+        */
     }
 }
-*/
